@@ -1,0 +1,32 @@
+# Secrets — never commit these
+.env
+.env.*
+*.json
+!package.json
+!package-lock.json
+credentials/
+*service-account*.json
+gcloud-credentials.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Local data / large files
+*.pdf
+data/
+notebooks/scratch*

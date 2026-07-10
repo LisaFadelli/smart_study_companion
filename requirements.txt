@@ -1,0 +1,6 @@
+pypdf==5.1.0
+langchain==0.3.14
+langchain-google-genai==4.2.7
+langchain-mongodb==0.4.0
+pymongo==4.10.1
+python-dotenv==1.0.1

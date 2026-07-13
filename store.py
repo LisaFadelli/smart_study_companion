@@ -30,7 +30,7 @@ def clear_source(vectore_store, source):
 def upsert_chunks(vector_store, chunks):
     texts = [c["text"] for c in chunks]
     metadatas = [{"page": c["page"], "source": c["source"], "chunk_id": c["chunk_id"]} for c in chunks]
-    ids=[c["text"] for c in chunks]
+    ids=[c["chunk_id"] for c in chunks]
     return vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
 # Re-running ingestion on the same PDF replaces existing chunks in place instead of inserting duplicates 
 
@@ -41,14 +41,10 @@ def get_retriever(vector_store, k):
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
+    from config import resolve_mongo_cfg
 
-    mongo_cfg = {
-        "db_name": "smartstudy",
-        "collection_name": "chunks",
-        "vector_index_name": "vector_index",
-        "embedding_field": "embedding",
-        "text_field": "text",
-    }
+    mongo_cfg = resolve_mongo_cfg(CONFIG)
+    print(f"Using collection: {mongo_cfg['collection_name']}")
 
     emb = get_embeddings(CONFIG["embedding"]["model"])
     print("Embeddings client OK")

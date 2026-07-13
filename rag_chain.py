@@ -32,7 +32,7 @@ def format_context(docs):
         parts.append(f"[Source: {src}, p.{page}]\n{d.page_content}")
     return "\n\n".join(parts)
 
-def build_chain(retriever, model_name): # to wire everything together
+def build_chain(retriever, model_name, temperature=0.2): # to wire everything together
     prompt=ChatPromptTemplate.from_template(message)
     llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
 
@@ -47,10 +47,10 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
     from store import get_embeddings, get_vector_store, get_retriever
-    from config import CONFIG
+    from config import CONFIG, resolve_mongo_cfg
 
     embeddings = get_embeddings(CONFIG["embedding"]["model"])
-    vector_store = get_vector_store(CONFIG["mongodb"], embeddings)
+    vector_store = get_vector_store(resolve_mongo_cfg(CONFIG), embeddings)
     retriever = get_retriever(vector_store, k=CONFIG["retrieval"]["k"])
 
     chain = build_chain(retriever, CONFIG["generation"]["model"], temperature=CONFIG["generation"].get("temperature", 0.2))

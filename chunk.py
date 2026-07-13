@@ -9,14 +9,19 @@ Both stretgies take the SAME chunk_size and chunk_overlap.
 from langchain_text_splitters import CharacterTextSplitter, RecursiveCharacterTextSplitter
 
 
+DEFAULT_RECURSIVE_SEPARATORS = ["\n\n", "\n", ". ", " ", ""]
+DEFAULT_FIXED_SEPARATOR = " "
+
 def chunk_pages(pages, strategy, chunk_size, chunk_overlap, separator_priority=None, fixed_separator=None):
     if strategy=="fixed":
-        splitter=CharacterTextSplitter(separator=fixed_separator, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        sep = fixed_separator if fixed_separator is not None else DEFAULT_FIXED_SEPARATOR
+        splitter=CharacterTextSplitter(separator=sep, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         # separator: " "=splitter only breaks chunks at word spaces, never midword, but not respecting sentences or paragraph
         # chunk_size=character count oper chunk
         # chunk_overlap= characters repeated between consecutive chunks, so a sentence that gets cut at a chunk boundary in chunk N still appears in full inside chunk N+1
     elif strategy=="recursive":
-        splitter=RecursiveCharacterTextSplitter(separators=separator_priority, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        separators = separator_priority if separator_priority is not None else DEFAULT_RECURSIVE_SEPARATORS
+        splitter=RecursiveCharacterTextSplitter(separators=separators, chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     else:
         raise ValueError(f"Unknown chunking strategy: {strategy}")
     

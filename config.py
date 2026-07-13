@@ -10,7 +10,8 @@ CONFIG = {
         "separator_priority":["\n\n", "\n", ". ","? ","! ", " ", ""]
     },
     "embedding":{
-        "model":"models/text-embedding-005",
+        #"model":"models/text-embedding-005",
+        "model":"text-embedding-005"
     },
     "retrieval":{
         "strategy":"vector",
@@ -18,6 +19,10 @@ CONFIG = {
     },
     "generation": {
         "model":"gemini-2.5-flash",
+        "temperature":0.2, # low but non-zero: favors grounded/consistent answers over creative variation,
+                             # while leaving enough room for the tutor persona's follow-up questions to vary.
+                             # This is an experimental parameter -- must be held constant across Experiments 1-2
+                             # or generation itself becomes a second, unintended independent variable.
     },
     "mongodb":{
         "db_name":"smartstudy",

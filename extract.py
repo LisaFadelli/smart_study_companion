@@ -21,7 +21,7 @@ def extract_pages(pdf_path):
         pages.append({"page":i, "text":text, "source":pdf_path.name})
     return pages
 
-if __name__ == "__main__":
-    pages = extract_pages("InformationRetrieval.pdf")   # <-- replace with a real PDF path
-    print(f"{len(pages)} pages extracted")
-    print(pages[0])
+# if __name__ == "__main__":
+#     pages = extract_pages("InformationRetrieval.pdf")   # <-- replace with a real PDF path
+#     print(f"{len(pages)} pages extracted")
+#     print(pages[0])

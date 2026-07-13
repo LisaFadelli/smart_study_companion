@@ -34,7 +34,7 @@ def format_context(docs):
 
 def build_chain(retriever, model_name): # to wire everything together
     prompt=ChatPromptTemplate.from_template(message)
-    llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=0.2)
+    llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
 
     chain=(RunnableParallel(context=retriever | format_context, question=RunnablePassthrough())
            | prompt
@@ -53,6 +53,6 @@ if __name__ == "__main__":
     vector_store = get_vector_store(CONFIG["mongodb"], embeddings)
     retriever = get_retriever(vector_store, k=CONFIG["retrieval"]["k"])
 
-    chain = build_chain(retriever, CONFIG["generation"]["model"])
+    chain = build_chain(retriever, CONFIG["generation"]["model"], temperature=CONFIG["generation"].get("temperature", 0.2))
     answer = chain.invoke("What TV game show did IBM's Watson win, and in what year?")
     print(answer)

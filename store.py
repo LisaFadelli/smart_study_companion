@@ -20,11 +20,19 @@ def get_vector_store(mongo_cfg, embeddings):
 # 2. Points at the specific "drawer" inside it where your chunks will live
 # 3. Wraps that drawer together with the "number machine" from step 1, so this one object can now do both: turn text into numbers AND save/search them in Atlas
 
+def clear_source(vectore_store, source):
+    result=vectore_store.collection.delete_many({"source":source})
+    return result.deleted_count
+# Delete all existing chunks for a given source PDF before re-ingesting
+# Calling this before ingestion guarantees a clean slate per source/config
+
+
 def upsert_chunks(vector_store, chunks):
     texts = [c["text"] for c in chunks]
     metadatas = [{"page": c["page"], "source": c["source"], "chunk_id": c["chunk_id"]} for c in chunks]
-    return vector_store.add_texts(texts=texts, metadatas=metadatas)
-
+    ids=[c["text"] for c in chunks]
+    return vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
+# Re-running ingestion on the same PDF replaces existing chunks in place instead of inserting duplicates 
 
 def get_retriever(vector_store, k):
     return vector_store.as_retriever(search_kwargs={"k": k})

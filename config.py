@@ -3,7 +3,7 @@ CONFIG = {
     "pdf_path":"InformationRetrieval.pdf",
 
     "chunking": {
-        "strategy":"fixed", # Possible values "fixed", "recursive"
+        "strategy":"recursive", # Possible values "fixed", "recursive"
         "chunk_size":1000,
         "chunk_overlap":150,
         "fixed_separator": " ",

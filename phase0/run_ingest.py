@@ -4,9 +4,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from dotenv import load_dotenv
 
-from extract import extract_pages
+from phase0.extract import extract_pages
 from chunk import chunk_pages
-from store import get_embeddings, get_vector_store, upsert_chunks, clear_source
+from phase0.store import get_embeddings, get_vector_store, upsert_chunks, clear_source
 from config import CONFIG, resolve_mongo_cfg
 
 load_dotenv()

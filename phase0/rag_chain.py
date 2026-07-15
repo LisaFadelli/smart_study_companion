@@ -46,7 +46,7 @@ def build_chain(retriever, model_name, temperature=0.2): # to wire everything to
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
-    from store import get_embeddings, get_vector_store, get_retriever
+    from phase0.store import get_embeddings, get_vector_store, get_retriever
     from config import CONFIG, resolve_mongo_cfg
 
     embeddings = get_embeddings(CONFIG["embedding"]["model"])

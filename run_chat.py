@@ -1,8 +1,8 @@
 from dotenv import load_dotenv
 load_dotenv()
 
-from phase0.store import get_embeddings, get_vector_store, get_retriever
-from phase0.rag_chain import build_chain
+from store import get_embeddings, get_vector_store, get_retriever
+from rag_chain import build_chain
 from config import CONFIG, resolve_mongo_cfg
 
 def main():

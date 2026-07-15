@@ -8,6 +8,8 @@ https://www.geeksforgeeks.org/python/extract-text-from-pdf-file-using-python/
 # importing required modules
 from pypdf import PdfReader
 from pathlib import Path
+from clean_text import clean_page_text # added to clean text after page extraction
+
 
 def extract_pages(pdf_path):
     pdf_path=Path(pdf_path)
@@ -17,7 +19,8 @@ def extract_pages(pdf_path):
     reader=PdfReader(str(pdf_path))
     pages=[]
     for i, page in enumerate(reader.pages, start =1):
-        text=page.extract_text() or ""
+        raw_text=page.extract_text() or ""
+        text=clean_page_text(raw_text)
         pages.append({"page":i, "text":text, "source":pdf_path.name})
     return pages
 

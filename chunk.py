@@ -39,7 +39,7 @@ def chunk_pages(pages, strategy, chunk_size, chunk_overlap, separator_priority=N
     return chunk
 
 if __name__ == "__main__":
-    from phase0.extract import extract_pages
+    from extract import extract_pages
     from config import CONFIG
 
     pages = extract_pages(CONFIG["pdf_path"]) 

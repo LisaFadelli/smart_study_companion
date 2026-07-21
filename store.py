@@ -1,7 +1,13 @@
 import os
+import time
+from datetime import datetime, timezone
+
 from pymongo import MongoClient
 from langchain_mongodb import MongoDBAtlasVectorSearch
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
+from google.api_core.exceptions import ResourceExhausted
+
 from config import CONFIG
 
 def get_embeddings(model_name):
@@ -26,12 +32,57 @@ def clear_source(vectore_store, source):
 # Delete all existing chunks for a given source PDF before re-ingesting
 # Calling this before ingestion guarantees a clean slate per source/config
 
+# To overcome the 429 RESOURCE_EXHAUSTED error
+# Re-running ingestion on the same PDF replaces existing chunks in place instead of
+# inserting duplicates (idempotent via chunk_id). Batched + retried to stay under
+# Vertex AI's embedding quota; batch_log feeds RQ4 latency/throughput analysis.
 
-def upsert_chunks(vector_store, chunks):
-    texts = [c["text"] for c in chunks]
-    metadatas = [{"page": c["page"], "source": c["source"], "chunk_id": c["chunk_id"]} for c in chunks]
-    ids=[c["chunk_id"] for c in chunks]
+@retry(
+    retry=retry_if_exception_type(ResourceExhausted),
+    wait=wait_exponential(multiplier=1, min=2, max=60),
+    stop=stop_after_attempt(6),
+)
+
+def _add_batch(vector_store, texts, metadatas, ids):
     return vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
+
+def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0):
+    all_ids = []
+    batch_log = []
+
+    n_batches = (len(chunks) + batch_size - 1) // batch_size
+
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i : i + batch_size]
+        batch_num = i // batch_size + 1
+
+        texts = [c["text"] for c in batch]
+        metadatas = [{"page": c["page"], "source": c["source"], "chunk_id": c["chunk_id"]} for c in batch]
+        ids = [c["chunk_id"] for c in batch]
+
+        start = time.monotonic()
+        batch_ids = vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
+        elapsed = time.monotonic() - start
+
+        all_ids.extend(batch_ids)
+        batch_log.append({
+            "batch_num": batch_num,
+            "batch_size": len(batch),
+            "elapsed_seconds": round(elapsed, 3),
+            "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        })
+        print(f"  Batch {batch_num}/{n_batches}: {len(batch)} chunks in {elapsed:.2f}s")
+
+        if batch_num < n_batches:
+            time.sleep(sleep_seconds)
+
+    return all_ids, batch_log
+
+# def upsert_chunks(vector_store, chunks):
+#     texts = [c["text"] for c in chunks]
+#     metadatas = [{"page": c["page"], "source": c["source"], "chunk_id": c["chunk_id"]} for c in chunks]
+#     ids = [c["chunk_id"] for c in chunks]
+#     return vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
 # Re-running ingestion on the same PDF replaces existing chunks in place instead of inserting duplicates 
 
 def get_retriever(vector_store, k):
@@ -55,5 +106,6 @@ if __name__ == "__main__":
     test_chunks = [
         {"text": "This is a test chunk about the Louvre Museum.", "page": 1, "source": "test.pdf", "chunk_id": "test_p1_c0"}
     ]
-    ids = upsert_chunks(vector_store, test_chunks)
+    ids, batch_log = upsert_chunks(vector_store, test_chunks)
     print(f"Upserted {len(ids)} test document(s), id(s): {ids}")
+    print(f"Batch log: {batch_log}")

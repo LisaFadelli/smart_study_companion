@@ -61,13 +61,22 @@ def main(pdf_path, cfg=CONFIG):
 
 
     print(f"[6/6] Embedding + upserting {len(chunks)} chunks ...")
-    ids=upsert_chunks(vectore_store, chunks)
+    ids, batch_log=upsert_chunks(vectore_store, chunks)
     print(f"Done. {len(ids)} documents upserted")
+    resolved["batch_log"] = batch_log
+    log_path.write_text(json.dumps(resolved, indent=2))
+
+def ingest_folder(folder_path, cfg=CONFIG):
+    folder=Path(folder_path)
+    pdf_files = sorted(folder.glob("*.pdf"))
+    for pdf_path in pdf_files:
+        print(f"\n=== Processing {pdf_path.name} ===")
+        main(pdf_path, cfg)
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python run_ingest.py path/to/lecture.pdf")
         sys.exit(1)
-    main(sys.argv[1])
+    ingest_folder(sys.argv[1])
 
     

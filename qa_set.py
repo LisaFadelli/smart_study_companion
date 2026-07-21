@@ -3,11 +3,11 @@ QA_SET=[
         'qa_id':'institution_101',
         'question':'What did the Treaty of Lisbon rename the Treaty establishing the European Community as?',
         'question_type':'extractive',
-        'topic_catgeory':'insitutions',
+        'topic_category':'institutions',
         'gold_answer':'It was renamed the Treaty on the Functioning of the European Union (TFEU), and the term Community was replaced by Union throughout the text.',
         'gold_sources':[{'source':'en-chapter-1.pdf',
                         'page':21,
-                        'text_span':'renamed the ‘Treaty on the Functioning of the European Union’ (TFEU) and the term ‘Community’ is replaced by ‘Union’ throughout the text'}],
+                        'text_span':"renamed the 'Treaty on the Functioning of the European Union' (TFEU) and the term 'Community' is replaced by 'Union' throughout the text"}],
         'difficulty':'easy',
         'notes':'Single-fact lookup from section 1.1.5, opening paragraph of CONTENT'
     },
@@ -126,7 +126,7 @@ QA_SET=[
         'gold_answer': 'Diversifying energy sources for security through EU solidarity; a fully integrated internal energy market; improving energy efficiency and cutting import dependence; decarbonising the economy in line with the Paris Agreement; and promoting research in low-carbon and clean energy technologies.',
         'gold_sources': [{'source': 'en-chapter-2.pdf',
                           'page': 203,
-                          'text_span': 'five main aims of the EU’s energy policy'}],
+                          'text_span': "five main aims of the EU's energy policy"}],
         'difficulty': 'medium',
         'notes': 'Section 2.4.7. Multi-part enumerated answer, good candidate for testing whether a retrieved chunk captures the full list or only part of it.'
     },
@@ -224,7 +224,7 @@ QA_SET=[
         'gold_answer': "Codecision, recognised as the 'ordinary legislative procedure' for the CAP.",
         'gold_sources': [{'source': 'en-chapter-3.pdf',
                           'page': 38,
-                          'text_span': 'recognised codecision as the ‘ordinary legislative procedure’'}],
+                          'text_span': "recognised codecision as the 'ordinary legislative procedure'"}],
         'difficulty': 'medium',
         'notes': 'Section 3.2.1, summary box. Bridges sectoral_policy and legislative_procedure flagged in case you would rather reclassify.'
     },

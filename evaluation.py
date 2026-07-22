@@ -190,25 +190,25 @@ def build_ragas_dataset(qa_set, retriever, chain):
 
     return dataset
 
-def run_ragas_eval(qa_set, retriever, chain):
+def run_ragas_eval(qa_set, retriever, chain, generation_model, embeddings, temperature):
 
     from ragas import evaluate
-    from ragas.metrics import(
-        faithfulness,
-        context_precision,
-        answer_relevancy,
-    )
+    from ragas.metrics import(faithfulness, context_precision, answer_relevancy,)
+    from ragas.llms import LangchainLLMWrapper
+    from ragas.embeddings import LangchainEmbeddingsWrapper
+    from langchain_google_genai import ChatGoogleGenerativeAI
 
+    def get_judge_llm(model_name, project, temperature=0.2):
+        return ChatGoogleGenerativeAI(model=model_name, vertexai=True, project=project, temperature=temperature,)
+    
     dataset=build_ragas_dataset(qa_set, retriever, chain)
+    judge_llm = get_judge_llm(generation_model, project="smartstudy-thesis", temperature=temperature,)
+    ragas_llm = LangchainLLMWrapper(judge_llm)
+    ragas_embeddings = LangchainEmbeddingsWrapper(embeddings)
 
-    metrics=[]
+    metrics = [faithfulness, context_precision, answer_relevancy]
 
-    metrics.append(faithfulness)
-    metrics.append(context_precision)
-    metrics.append(answer_relevancy)
-
-    result = evaluate(dataset, metrics=metrics)
-
+    result = evaluate(dataset, metrics=metrics, llm=ragas_llm, embeddings=ragas_embeddings)
     result_dataframe=result.to_pandas()
     return result_dataframe
 
@@ -254,7 +254,7 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
 
         chain = build_chain(retriever, generation_model, temperature=temperature)
 
-        ragas_df = run_ragas_eval(qa_set, retriever, chain)
+        ragas_df = run_ragas_eval(qa_set, retriever, chain, generation_model=generation_model, embeddings=embeddings, temperature=temperature)
     else:
         print("Skipping RAGAS")
 
@@ -305,4 +305,4 @@ if __name__ == "__main__":
     from config import CONFIG
     from qa_set import QA_SET
 
-    run_evaluation(CONFIG, QA_SET, run_ragas=False, match_mode="any")
+    run_evaluation(CONFIG, QA_SET, run_ragas=True, match_mode="any")

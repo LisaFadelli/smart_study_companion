@@ -236,7 +236,8 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
     embeddings= get_embeddings(cfg["embedding"]["model"])
     vector_store = get_vector_store(mongo_cfg, embeddings)
     retrieval_k=cfg["retrieval"]["k"]
-    retriever=get_retriever(vector_store, k=retrieval_k)
+    # retriever=get_retriever(vector_store, k=retrieval_k)
+    retriever = get_retriever(vector_store, k=retrieval_k,strategy=cfg["retrieval"]["strategy"],collection=vector_store.collection, mongo_cfg=mongo_cfg,)
 
     # Step 2: retrieval evaluation
     print(f"[1/3] Scoring retrieval (IR metrics), collection={mongo_cfg['collection_name']}, match_mode={match_mode}")
@@ -275,8 +276,9 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
     log["n_qa_items"] = len(qa_set)
     log["ir_metrics"] = ir_results
     log["per_item"] = scored_items
+    tag = f"{cfg['chunking']['strategy']}_{cfg['retrieval']['strategy']}"
 
-    log_path = (RUN_LOG_DIR /f"eval_{timestamp}_{strategy}.json")
+    log_path = (RUN_LOG_DIR /f"eval_{timestamp}_{tag}.json")
     log_text = json.dumps(log, indent=2)
     log_path.write_text(log_text)
 

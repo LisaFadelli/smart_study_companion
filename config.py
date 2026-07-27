@@ -3,7 +3,7 @@ CONFIG = {
     "pdf_path":"InformationRetrieval.pdf",
 
     "chunking": {
-        "strategy":"fixed", # Possible values "fixed", "recursive"
+        "strategy":"recursive", # Possible values "fixed", "recursive"
         "chunk_size":1000,
         "chunk_overlap":150,
         "fixed_separator": " ",
@@ -14,7 +14,7 @@ CONFIG = {
         "model":"text-embedding-005"
     },
     "retrieval":{
-        "strategy":"vector",
+        "strategy":"hybrid", # Possible values: "vector", "hybrid"
         "k":4,
     },
     "generation": {
@@ -29,7 +29,8 @@ CONFIG = {
         "collection_name":"chunks",
         "vector_index_name":"vector_index",
         "embedding_field":"embedding",
-        "text_field":"text"
+        "text_field":"text",
+        "text_index_name":"chunk_recursive_text_idx"
     },
 }
 

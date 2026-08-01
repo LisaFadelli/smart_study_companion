@@ -1,0 +1,9 @@
+functions-framework
+google-cloud-storage
+pypdf # To evaluate whether to subsitute it with PyMuPDF
+langchain-text-splitters
+langchain-mongodb
+langchain-google-genai
+pymongo
+tenacity
+google-api-core

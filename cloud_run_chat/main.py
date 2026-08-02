@@ -68,7 +68,7 @@ class ChatRequest(BaseModel):
     """
 
     query:str
-    history:list[dict]|None=None
+    #history:list[dict]|None=None
 
 class ChatResponse(BaseModel):
     """Response body for POST /chat.
@@ -92,8 +92,8 @@ def chat(req: ChatRequest):
     if _chain is None:
         raise HTTPException(status_code=500, detail="Chain not initialized yet")
 
-    if req.history:
-        logger.warning("history received but not used by chain")
+    # if req.history:
+    #     logger.warning("history received but not used by chain")
 
     try:
         # invoke the RAG chain with the user's question

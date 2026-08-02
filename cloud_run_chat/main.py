@@ -31,7 +31,7 @@ app=FastAPI(
 # Global variable that will hold the RAG chain after startup. We build it once at startup so we don't re-load models
 _chain=None
 
-@app.on.event("startup")
+@app.on_event("startup")
 def load_chain():
     """Build the RAG chain once when the container starts.
     This function:
@@ -44,7 +44,7 @@ def load_chain():
     global _chain
     logger.info("Building RAG chain at startup...")
 
-    # 1. Emedding model
+    # 1. Embedding model
     embeddings = get_embeddings(CONFIG["embedding"]["model"])
 
     # 2. Vector store (MongoDB)

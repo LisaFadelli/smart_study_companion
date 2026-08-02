@@ -151,7 +151,7 @@ def get_retriever(vector_store, k, strategy="vector", collection=None, mongo_cfg
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(override=False)
     from config import resolve_mongo_cfg
 
     mongo_cfg = resolve_mongo_cfg(CONFIG)

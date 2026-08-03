@@ -3,7 +3,7 @@ AI Study Companion - beginner.friendly Streamlit frontend
 
 This app:
 - shows a simple chat interface
-- sends the user's question to your already-deployed Cloud Run chat service
+- sends the user's question + history to your already-deployed Cloud Run chat service
 - displays the answer in the chat
 
 """
@@ -11,6 +11,7 @@ This app:
 import time
 import requests
 import streamlit as st
+from typing import List, Tuple
 
 # 1. Page configuration
 st.set_page_config(
@@ -41,6 +42,11 @@ with st.sidebar:
         st.write("Recent response times (seconds):")
         st.write(st.session_state.latencies[-10:])
 
+    # End chat button
+    if st.button("End chat"):
+        st.session_state.messages=[]
+        st.rerun()
+
 # 4. Chat history management
 # Initialize chat history in session state if it doesn't exist yet
 if "messages" not in st.session_state:
@@ -50,6 +56,35 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
+
+# Helper: convert Streamlit messages → [(role, content)] tuples for the backend
+def build_history_tuples(messages: List[dict]) -> List[Tuple[str, str]]:
+    """
+    Convert Streamlit-style messages:
+      [{"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]
+    into backend-style history:
+      [("human", "..."), ("ai", "...")]
+    """
+    history = []
+    for msg in messages:
+        role = msg["role"]
+        content = msg["content"]
+        if role == "user":
+            history.append(("human", content))
+        elif role == "assistant":
+            history.append(("ai", content))
+        # ignore any other roles
+    return history
+
+
+# Helper: trim history to max_turns
+def trim_history_by_turns(
+    history: List[Tuple[str, str]],
+    max_turns: int = 7,
+) -> List[Tuple[str, str]]:
+    if not history:
+        return []
+    return history[-max_turns:]
 
 # 5. Handle new user input
 if query := st.chat_input("Ask a question..."):
@@ -67,9 +102,13 @@ if query := st.chat_input("Ask a question..."):
         try:
             start_time = time.time()
 
+            # Build history tuples
+            history_tuples=build_history_tuples(st.session_state.messages)
+            history_trimmed=trim_history_by_turns(history_tuples, max_turns=7)
+
             response = requests.post(
                 CHAT_ENDPOINT,
-                json={"query": query},
+                json={"query": query, "history":history_trimmed},
                 timeout=60  # wait up to 60 seconds
             )
 

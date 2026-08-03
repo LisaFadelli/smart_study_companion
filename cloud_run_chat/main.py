@@ -28,35 +28,46 @@ app=FastAPI(
     title="SmartStudy Chat",
     description="Thin API wrapper around the local RAG chain for Cloud Run deployment.",)
 
-# Global variable that will hold the RAG chain after startup. We build it once at startup so we don't re-load models
-_chain=None
+# # Global variable that will hold the RAG chain after startup. We build it once at startup so we don't re-load models
+# _chain=None
 
-@app.on_event("startup")
-def load_chain():
-    """Build the RAG chain once when the container starts.
-    This function:
-    1. creates the embeddings model
-    2. Connects to the vector store (MongoDB)
-    3. Creates the retriever
-    4. Builds the full RAG chain (retrieval+generation)
-    """
+# @app.on_event("startup")
+# def load_chain():
+#     """Build the RAG chain once when the container starts.
+#     This function:
+#     1. creates the embeddings model
+#     2. Connects to the vector store (MongoDB)
+#     3. Creates the retriever
+#     4. Builds the full RAG chain (retrieval+generation)
+#     """
 
-    global _chain
-    logger.info("Building RAG chain at startup...")
+#     global _chain
+#     logger.info("Building RAG chain at startup...")
 
-    # 1. Embedding model
-    embeddings = get_embeddings(CONFIG["embedding"]["model"])
+#     # 1. Embedding model
+#     embeddings = get_embeddings(CONFIG["embedding"]["model"])
 
-    # 2. Vector store (MongoDB)
-    vector_store = get_vector_store(resolve_mongo_cfg(CONFIG), embeddings)
+#     # 2. Vector store (MongoDB)
+#     vector_store = get_vector_store(resolve_mongo_cfg(CONFIG), embeddings)
 
-    # 3. Retriever
-    retriever = get_retriever(vector_store, k=CONFIG["retrieval"]["k"])
+#     # 3. Retriever
+#     retriever = get_retriever(vector_store, k=CONFIG["retrieval"]["k"])
 
-    # 4. Full RAG chain: retriever + LLM + prompt
-    chain = build_chain(retriever, CONFIG["generation"]["model"], temperature=CONFIG["generation"].get("temperature", 0.2),)
+#     # 4. Full RAG chain: retriever + LLM + prompt
+#     chain = build_chain(retriever, CONFIG["generation"]["model"], temperature=CONFIG["generation"].get("temperature", 0.2),)
 
-    logger.info("Chain ready.")
+#     logger.info("Chain ready.")
+
+logger.info("Building RAG chain...")
+_embeddings = get_embeddings(CONFIG["embedding"]["model"])
+_vector_store = get_vector_store(resolve_mongo_cfg(CONFIG), _embeddings)
+_retriever = get_retriever(_vector_store, k=CONFIG["retrieval"]["k"])
+_chain = build_chain(
+    _retriever,
+    CONFIG["generation"]["model"],
+    temperature=CONFIG["generation"].get("temperature", 0.2),
+)
+logger.info("Chain ready.")
 
 ### Request/Response models
 class ChatRequest(BaseModel):

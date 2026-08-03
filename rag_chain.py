@@ -109,6 +109,10 @@ def format_context(docs):
         parts.append(f"[Source: {src}, p.{page}]\n{d.page_content}")
     return "\n\n".join(parts)
 
+
+import logging
+logger = logging.getLogger("rag_chain")
+
 def build_chain(retriever, model_name, temperature=0.2): # to wire everything together
     prompt=_TUTOR_PROMPT
     llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
@@ -125,8 +129,21 @@ def build_chain(retriever, model_name, temperature=0.2): # to wire everything to
         condenser,
     )
 
+    def safe_standalone_question(x):
+        """
+        Run condensation, but never let an empty/blank result reach the
+        retriever — the embedding API rejects empty strings outright
+        (400 INVALID_ARGUMENT: Empty instances), which is a hard crash,
+        not a graceful degradation.
+        """
+        result = condense_or_passthrough.invoke(x)
+        if not result or not result.strip():
+            logger.warning("Condenser returned empty result, falling back to raw question")
+            return x["question"]
+        return result
+
     chain = (RunnablePassthrough.assign(chat_history=lambda x: tuples_to_messages(x.get("chat_history",[]))) # 1. Convert chat history from tuples -> BaseMessage object
-             | RunnablePassthrough.assign(standalone_question=condense_or_passthrough) # 2. Condense question + history into a standalone question
+             | RunnablePassthrough.assign(standalone_question=safe_standalone_question) # 2. Condense question + history into a standalone question
              | RunnablePassthrough.assign(context=lambda x: format_context(retriever.invoke(x["standalone_question"]))) # 3. Retrieve context using the standalone question
              | prompt
              | llm

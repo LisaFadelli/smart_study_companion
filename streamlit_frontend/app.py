@@ -88,23 +88,26 @@ def trim_history_by_turns(
 
 # 5. Handle new user input
 if query := st.chat_input("Ask a question..."):
-    # 5.1 Add user message to history and show it
+
+    # 5.1 Build history tuples
+    history_tuples=build_history_tuples(st.session_state.messages)
+    history_trimmed=trim_history_by_turns(history_tuples, max_turns=7)
+
+    # 5.2 Add user message to history and show it
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
         st.markdown(query)
 
-    # 5.2 Show a "Thinking..." placeholder for the assistant
+    # 5.3 Show a "Thinking..." placeholder for the assistant
     with st.chat_message("assistant"):
         placeholder = st.empty()
         placeholder.markdown("_Thinking..._")
 
-        # 5.3 Call the chat service
+        success=False
+        answer=None
+
         try:
             start_time = time.time()
-
-            # Build history tuples
-            history_tuples=build_history_tuples(st.session_state.messages)
-            history_trimmed=trim_history_by_turns(history_tuples, max_turns=7)
 
             response = requests.post(
                 CHAT_ENDPOINT,
@@ -122,6 +125,7 @@ if query := st.chat_input("Ask a question..."):
                 answer = data.get("answer", "(no answer field in response)")
 
                 placeholder.markdown(answer)
+                success=True
 
                 # Optional debug info
                 if debug_mode:
@@ -136,12 +140,11 @@ if query := st.chat_input("Ask a question..."):
                     error_detail = response.text
 
                 placeholder.error(f"Service error ({response.status_code}): {error_detail}")
-                answer = f"[Error: {error_detail}]"
 
         # 5.6 Handle network/connection errors
         except requests.exceptions.RequestException as e:
             placeholder.error(f"Could not reach the chat service: {e}")
-            answer = f"[Error: {e}]"
 
     # 5.7 Add assistant message to history
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+    if success:
+        st.session_state.messages.append({"role": "assistant", "content": answer})

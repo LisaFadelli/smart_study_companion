@@ -1,10 +1,12 @@
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder # Help to build structured prompts for LLM, including slots for chat history and user input
-from langchain_core.output_parsers import StrOutputParser # Tell the chain to return plain text from the LLM
-from langchain_core.runnables import RunnablePassthrough, RunnableBranch
+import logging
+from typing import List, Tuple
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
-from typing import List, Tuple
- 
+
+logger = logging.getLogger("rag_chain")
 
 ### 1) Condensation step: turn a follow up question so into a query
 # This prompt is used to rewrite a follow-up question so it can be understood without needing the chat history.
@@ -22,7 +24,7 @@ _CONDENSE_PROMPT = ChatPromptTemplate.from_messages([
 
 def build_condenser(model_name: str, temperature: float = 0.0):
     """
-    Builds and returns a small, cheap LLM chain whose only job is to rewrite (condense) follow-up questions into standalone questions.
+    Builds and returns a LLM chain whose only job is to rewrite (condense) follow-up questions into standalone questions.
 
     Why separate?
     - We use a low-temperature, focused prompt just for rewriting.
@@ -48,6 +50,9 @@ def tuples_to_messages(history: List[Tuple[str, str]]) -> List[BaseMessage]:
     of losing a turn.
     """
     messages: List[BaseMessage] = []
+    if not history:
+        return messages
+
     for role, content in history:
         if role == "ai":
             messages.append(AIMessage(content=content))
@@ -110,44 +115,61 @@ def format_context(docs):
     return "\n\n".join(parts)
 
 
-import logging
-logger = logging.getLogger("rag_chain")
 
 def build_chain(retriever, model_name, temperature=0.2): # to wire everything together
     prompt=_TUTOR_PROMPT
     llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
     condenser=build_condenser(model_name)
 
-    # Decide whether to rewrite the question or just use it as-is.
-    # Condition:
-    #   - If chat_history is empty (first turn), we don't need to rewrite. We just take x["question"].
-    #   - If chat_history is not empty, we run the condenser to get a standalone version of the question.
-    condense_or_passthrough = RunnableBranch(
-        # Condition + action if True:
-        (lambda x: len(x.get("chat_history", [])) == 0, lambda x: x["question"]),
-        # Action if False: run the condenser chain.
-        condenser,
-    )
-
     def safe_standalone_question(x):
         """
-        Run condensation, but never let an empty/blank result reach the
-        retriever — the embedding API rejects empty strings outright
-        (400 INVALID_ARGUMENT: Empty instances), which is a hard crash,
-        not a graceful degradation.
+       Safely generates a standalone question. 
+        Catches empty strings, whitespace, and LLM exception blocks to guarantee 
+        a valid non-empty string reaches the embedding retriever.
         """
-        result = condense_or_passthrough.invoke(x)
-        if not result or not result.strip():
-            logger.warning("Condenser returned empty result, falling back to raw question")
-            return x["question"]
-        return result
+        raw_question = str(x.get("question", "")).strip()
+        messages_history = x.get("chat_history", [])
 
-    chain = (RunnablePassthrough.assign(chat_history=lambda x: tuples_to_messages(x.get("chat_history",[]))) # 1. Convert chat history from tuples -> BaseMessage object
-             | RunnablePassthrough.assign(standalone_question=safe_standalone_question) # 2. Condense question + history into a standalone question
-             | RunnablePassthrough.assign(context=lambda x: format_context(retriever.invoke(x["standalone_question"]))) # 3. Retrieve context using the standalone question
-             | prompt
-             | llm
-             | StrOutputParser())
+        # Turn 1: If chat_history is empty, return raw question immediately
+        if not messages_history:
+            return raw_question
+
+        # Turn 2+: Run condenser inside a try/except guard
+        try:
+            condensed = condenser.invoke(x)
+            if isinstance(condensed, str) and condensed.strip():
+                return condensed.strip()
+            
+            logger.warning("Condenser returned empty output or whitespace. Falling back to raw question.")
+        except Exception as e:
+            logger.error(f"Condenser invocation failed: {e}. Falling back to raw question.")
+
+        # Emergency Fallback: Ensure raw_question itself isn't empty
+        if not raw_question:
+            raise ValueError("Both condensed standalone question and original user question are empty.")
+
+        return raw_question
+
+    def retrieve_and_format(x: dict) -> str:
+        """Retrieves documents using the guaranteed valid standalone question."""
+        standalone_q = x["standalone_question"]
+        docs = retriever.invoke(standalone_q)
+        return format_context(docs)
+
+    chain = (
+        # 1. Convert tuple history to BaseMessage objects
+        RunnablePassthrough.assign(
+            chat_history=lambda x: tuples_to_messages(x.get("chat_history", []))
+        )
+        # 2. Derive standalone question with robust fail-safes
+        | RunnablePassthrough.assign(standalone_question=safe_standalone_question)
+        # 3. Retrieve and format vector store documents
+        | RunnablePassthrough.assign(context=retrieve_and_format)
+        # 4. Generate answer with Tutor LLM
+        | prompt
+        | llm
+        | StrOutputParser()
+    )
 
     return chain
 

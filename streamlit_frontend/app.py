@@ -18,8 +18,44 @@ st.set_page_config(
     page_title="SmartStudy Tutor",
     page_icon="📚"
 )
-st.title("📚 SmartStudy Tutor")
-st.caption("Ask a question about your uploaded lecture material.")
+
+AVATAR_USER = "🧑‍💻"
+AVATAR_ASSISTANT = "🇪🇺"
+
+st.markdown(
+    """
+    <style>
+    .stButton>button {
+        background-color: #003399;
+        color: white;
+        font-weight: 600;
+        border: none;
+    }
+    div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarUser"]) {
+        background-color: #F2F5FC;
+        border: 1px solid #b5c8e8;
+        border-radius: 10px;
+    }
+    div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarAssistant"]) {
+        background-color: #FFFBEA;
+        border: 1px solid #FFCC00;
+        border-radius: 10px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-size:2rem;">📚</span>
+        <h1 style="margin:0; color:#003399;">SmartStudy Tutor</h1>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.caption("EPSO EU career exam prep — ask a question about your uploaded lecture material.")
 
 # 2. Chat service URL
 # For now, this is hardcoded.
@@ -54,7 +90,8 @@ if "messages" not in st.session_state:
 
 # Display all previous messages
 for msg in st.session_state.messages:
-    with st.chat_message(msg["role"]):
+    avatar = AVATAR_USER if msg["role"] == "user" else AVATAR_ASSISTANT
+    with st.chat_message(msg["role"], avatar=avatar):
         st.markdown(msg["content"])
 
 # Helper: convert Streamlit messages → [(role, content)] tuples for the backend
@@ -95,11 +132,11 @@ if query := st.chat_input("Ask a question..."):
 
     # 5.2 Add user message to history and show it
     st.session_state.messages.append({"role": "user", "content": query})
-    with st.chat_message("user"):
+    with st.chat_message("user", avatar=AVATAR_USER):
         st.markdown(query)
 
     # 5.3 Show a "Thinking..." placeholder for the assistant
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=AVATAR_ASSISTANT):
         placeholder = st.empty()
         placeholder.markdown("_Thinking..._")
 

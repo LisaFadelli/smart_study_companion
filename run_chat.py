@@ -16,13 +16,19 @@ def main():
     chain = build_chain(retriever, CONFIG["generation"]["model"], temperature=CONFIG["generation"].get("temperature", 0.2))
 
     print("SmartStudy baseline tutor. Type 'exit' to quit.\n")
+    chat_history=[] # fix: added to respect the chat_history requirement and mirror it locally
     while True:
         question = input("You: ").strip()
         if question.lower() in {"exit", "quit"}:
             break
         if not question:
             continue
-        print(f"\nTutor: {chain.invoke(question)}\n")
+        answer = chain.invoke({"question": question, "chat_history": chat_history})
+        print(f"\nTutor: {answer}\n")
+
+        # NEW: append this turn so the next one has real history to condense against
+        chat_history.append(("human", question))
+        chat_history.append(("ai", answer))
 
 if __name__ == "__main__":
     main()

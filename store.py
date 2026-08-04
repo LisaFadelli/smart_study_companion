@@ -112,7 +112,7 @@ def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0):
         ids = [c["chunk_id"] for c in batch]
 
         start = time.monotonic()
-        batch_ids = vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
+        batch_ids = _add_batch(vector_store, texts, metadatas, ids)
         elapsed = time.monotonic() - start
 
         all_ids.extend(batch_ids)
@@ -139,7 +139,7 @@ def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0):
 # def get_retriever(vector_store, k):
 #     return vector_store.as_retriever(search_kwargs={"k": k})
 
-def get_retriever(vector_store, k, strategy="vector", collection=None, mongo_cfg=None):
+def get_retriever(vector_store, k, strategy, collection=None, mongo_cfg=None):
     if strategy == "vector":
         return vector_store.as_retriever(search_kwargs={"k": k})
     elif strategy == "hybrid":

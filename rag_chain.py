@@ -6,6 +6,8 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 
+from metrics import log_usage
+
 logger = logging.getLogger("rag_chain")
 
 ### 1) Condensation step: turn a follow up question so into a query
@@ -37,6 +39,23 @@ def build_condenser(model_name: str, temperature: float = 0.0):
     # Create the LLM instance for condensation.
     llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
 
+    def _timed_invoke(prompt_value) -> AIMessage:
+        """Times the condenser's own LLM call and logs its token usage."""
+        start = time.monotonic()
+        message = llm.invoke(prompt_value)
+        elapsed = time.monotonic() - start
+        if metrics_ctx is not None:
+            usage = getattr(message, "usage_metadata", None) or {}
+            log_usage(
+                model=model_name,
+                component="condense",
+                latency_seconds=elapsed,
+                metrics_ctx=metrics_ctx,
+                input_tokens=usage.get("input_tokens"),
+                output_tokens=usage.get("output_tokens"),
+            )
+        return message
+    
     # Build a chain: prompt -> LLM -> parse output as string.
     return _CONDENSE_PROMPT | llm | StrOutputParser()
 
@@ -116,10 +135,10 @@ def format_context(docs):
 
 
 
-def build_chain(retriever, model_name, temperature=0.2): # to wire everything together
+def build_chain(retriever, model_name, temperature=0.2, metrics_ctx=None): # to wire everything together
     prompt=_TUTOR_PROMPT
     llm=ChatGoogleGenerativeAI(model=model_name, project="smartstudy-thesis", vertexai=True, temperature=temperature)
-    condenser=build_condenser(model_name)
+    condenser=build_condenser(model_name, metrics_ctx=metrics_ctx)
 
     def safe_standalone_question(x):
         """
@@ -155,6 +174,26 @@ def build_chain(retriever, model_name, temperature=0.2): # to wire everything to
         standalone_q = x["standalone_question"]
         docs = retriever.invoke(standalone_q)
         return format_context(docs)
+
+    def timed_llm_call(prompt_value):
+        """Wraps the main tutor LLM call so latency and token usage are
+        captured together -- doing this as one step (rather than timing
+        outside the chain) avoids folding prompt-formatting time into
+        "generation latency"."""
+        start = time.monotonic()
+        message = llm.invoke(prompt_value)
+        elapsed = time.monotonic() - start
+        if metrics_ctx is not None:
+            usage = getattr(message, "usage_metadata", None) or {}
+            log_usage(
+                model=model_name,
+                component="generate",
+                latency_seconds=elapsed,
+                metrics_ctx=metrics_ctx,
+                input_tokens=usage.get("input_tokens"),
+                output_tokens=usage.get("output_tokens"),
+            )
+        return message
 
     chain = (
         # 1. Convert tuple history to BaseMessage objects

@@ -8,6 +8,8 @@ from extract import extract_pages
 from chunk import chunk_pages
 from store import get_embeddings, get_vector_store, upsert_chunks, clear_source
 from config import CONFIG, resolve_mongo_cfg
+from metrics import make_metrics_ctx
+
 
 load_dotenv()
 
@@ -61,6 +63,7 @@ def main(pdf_path, cfg=CONFIG):
 
 
     print(f"[6/6] Embedding + upserting {len(chunks)} chunks ...")
+    metrics_ctx = make_metrics_ctx(chunking_strategy=cfg["chunking"]["strategy"], run_id=source_name)
     ids, batch_log=upsert_chunks(vectore_store, chunks)
     print(f"Done. {len(ids)} documents upserted")
     resolved["batch_log"] = batch_log

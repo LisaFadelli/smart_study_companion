@@ -11,6 +11,8 @@ from extract import extract_pages
 from chunk_utils import chunk_pages
 from store import get_embeddings, get_vector_store, upsert_chunks, clear_source
 from config import CONFIG, resolve_mongo_cfg
+from metrics import make_metrics_ctx
+
 
 @functions_framework.cloud_event
 def process_pdf(cloud_event):
@@ -52,6 +54,7 @@ def process_pdf(cloud_event):
     print(f"[4/5] Cleared {deleted} existing chunks")
 
     # Step 5: Create embeddings for chunks and store them
+    metrics_ctx = make_metrics_ctx(chunking_strategy=chunking_cfg["strategy"], run_id=file_name)
     ids, batch_log=upsert_chunks(vector_store, chunks)
     print(f"[5/5] Upserted {len(ids)} chunks. Batches: {len(batch_log)}")
 

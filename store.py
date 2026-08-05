@@ -9,6 +9,7 @@ from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_excep
 from google.api_core.exceptions import ResourceExhausted
 
 from config import CONFIG
+from metrics import log_usage
 
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
@@ -97,11 +98,12 @@ def clear_source(vectore_store, source):
 def _add_batch(vector_store, texts, metadatas, ids):
     return vector_store.add_texts(texts=texts, metadatas=metadatas, ids=ids)
 
-def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0):
+def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0, metrics_ctx=None):
     all_ids = []
     batch_log = []
 
     n_batches = (len(chunks) + batch_size - 1) // batch_size
+    embedding_model = CONFIG["embedding"]["model"]
 
     for i in range(0, len(chunks), batch_size):
         batch = chunks[i : i + batch_size]
@@ -122,7 +124,18 @@ def upsert_chunks(vector_store, chunks, batch_size=20, sleep_seconds=2.0):
             "elapsed_seconds": round(elapsed, 3),
             "timestamp_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         })
-        print(f"  Batch {batch_num}/{n_batches}: {len(batch)} chunks in {elapsed:.2f}s")
+        print(f"Batch {batch_num}/{n_batches}: {len(batch)} chunks in {elapsed:.2f}s")
+
+        if metrics_ctx is not None:
+            char_count = sum(len(t) for t in texts)
+            log_usage(
+                model=embedding_model,
+                component="embed",
+                latency_seconds=elapsed,
+                metrics_ctx=metrics_ctx,
+                input_chars=char_count,
+                extra={"batch_size": len(batch)},
+            )
 
         if batch_num < n_batches:
             time.sleep(sleep_seconds)

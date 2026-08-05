@@ -31,6 +31,18 @@ CONFIG = {
         "text_field":"text",
         "text_index_name":"chunk_recursive_text_idx"
     },
+    "metrics": {
+        "collection_name": "usage_metrics",
+        "pricing": {
+            "gemini-2.5-flash": {
+                "input_per_million": 0.30,
+                "output_per_million": 2.50,
+            },
+            "text-embedding-005": {
+                "embedding_rate_per_1k_chars": 0.000025,
+            },
+        },
+    },
 }
 
 def resolve_mongo_cfg(cfg=CONFIG):

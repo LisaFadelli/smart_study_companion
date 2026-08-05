@@ -10,7 +10,7 @@ CONFIG = {
         "separator_priority":["\n\n", "\n", ". ","? ","! ", " ", ""]
     },
     "embedding":{
-        #"model":"models/text-embedding-005",
+        #"model":"models/text-embedding-005", "gemini-embedding-001"
         "model":"text-embedding-005"
     },
     "retrieval":{

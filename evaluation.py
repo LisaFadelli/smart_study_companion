@@ -6,6 +6,8 @@ import json # save results
 from datetime import datetime, timezone
 from pathlib import Path # to create folders/files
 from collections import defaultdict # group metrics
+from tqdm import tqdm
+
 
 RUN_LOG_DIR=Path("run_logs")
 
@@ -106,7 +108,7 @@ def score_all_items(qa_set, retriever, match_mode="any"):
     """
 
     scored_items = []
-    for item in qa_set:
+    for item in tqdm(qa_set, "Running IR metrics"):
         result = score_single_item(item, retriever, match_mode=match_mode)
         scored_items.append(result)
     return scored_items
@@ -159,12 +161,14 @@ def build_ragas_dataset(qa_set, retriever, chain):
     
     from datasets import Dataset # from HuggingFace library provides an easy way to create, load, manipulate datasets for ML workflows
 
+    qa_ids=[]
     questions=[]
     answers=[]
     contexts=[]
     ground_truth=[]
 
-    for item in qa_set:
+    for item in tqdm(qa_set, desc="building RAGAS dataset", unit="q"):
+        qa_ids.append(item["qa_id"])
         question=item["question"]
         retrieved_documents=retriever.invoke(question)
         context_texts=[]
@@ -172,7 +176,7 @@ def build_ragas_dataset(qa_set, retriever, chain):
             page_text=document.page_content
             context_texts.append(page_text)
         
-        generated_answer=chain.invoke(question)
+        generated_answer = chain.invoke({"question": question, "chat_history": []})
 
         questions.append(question)
         answers.append(generated_answer)
@@ -180,6 +184,7 @@ def build_ragas_dataset(qa_set, retriever, chain):
         ground_truth.append(item["gold_answer"])
     
     dataset_dictionary={
+        "qa_id":qa_ids,
         "question":questions,
         "answer":answers,
         "contexts":contexts,
@@ -285,26 +290,12 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
     print(f"Saved to {log_path}")
 
     if ragas_df is not None:
-
-        ragas_path = (
-            RUN_LOG_DIR /
-            f"eval_{timestamp}_{strategy}_ragas.csv"
-        )
-
-        ragas_df.to_csv(
-            ragas_path,
-            index=False
-        )
-
-        print(
-            f"RAGAS results saved to {ragas_path}"
-        )
-
-
+        ragas_path = (RUN_LOG_DIR / f"eval_{timestamp}_{tag}_ragas.csv")
+        ragas_df.to_csv(ragas_path, index=False)
+        print(f"RAGAS results saved to {ragas_path}")
     return log, ragas_df
 
 if __name__ == "__main__":
     from config import CONFIG
     from qa_set import QA_SET
-
     run_evaluation(CONFIG, QA_SET, run_ragas=True, match_mode="any")

@@ -24,7 +24,7 @@ _CONDENSE_PROMPT = ChatPromptTemplate.from_messages([
     ("human", "{question}"),
 ])
 
-def build_condenser(model_name: str, temperature: float = 0.0):
+def build_condenser(model_name: str, temperature: float = 0.0, metrics_ctx: dict = None):
     """
     Builds and returns a LLM chain whose only job is to rewrite (condense) follow-up questions into standalone questions.
 

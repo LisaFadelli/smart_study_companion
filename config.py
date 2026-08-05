@@ -3,7 +3,7 @@ CONFIG = {
     "pdf_path":"InformationRetrieval.pdf",
 
     "chunking": {
-        "strategy":"recursive", # Possible values "fixed", "recursive"
+        "strategy":"fixed", # Possible values "fixed", "recursive"
         "chunk_size":1000,
         "chunk_overlap":150,
         "fixed_separator": " ",
@@ -14,7 +14,7 @@ CONFIG = {
         "model":"text-embedding-005"
     },
     "retrieval":{
-        "strategy":"hybrid", # Possible values: "vector", "hybrid"
+        "strategy":"vector", # Possible values: "vector", "hybrid"
         "k":4,
     },
     "generation": {
@@ -32,6 +32,7 @@ CONFIG = {
         "text_index_name":"chunk_recursive_text_idx"
     },
     "metrics": {
+        "enabled": True,
         "collection_name": "usage_metrics",
         "pricing": {
             "gemini-2.5-flash": {

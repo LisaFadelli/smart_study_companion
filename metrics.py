@@ -34,7 +34,7 @@ def _get_deployment_context() -> str:
     """
     if os.getenv("K_SERVICE"):
         return "cloud_function"
-    return "local
+    return "local"
 
 _client=None
 def _get_collection():
@@ -55,16 +55,15 @@ def make_metrics_ctx(
     chunking_strategy: Optional[str] = None,
     retrieval_strategy: Optional[str] = None,
     run_id: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> Optional[Dict[str, Any]]:
     """
-    Build the metrics_ctx dict that log_usage() expects. Call this once per
-    chain/ingest run and pass the same dict into every log_usage() call for
-    that run, so all events from one query or one ingestion job share the
-    same run_id and get tagged with the same strategy labels.
- 
-    Defaults chunking_strategy/retrieval_strategy from CONFIG if not passed,
-    so you don't have to repeat what's already set there.
+    Build the metrics_ctx dict that log_usage() expects.
+    Returns None if CONFIG["metrics"]["enabled"] is False or missing.
     """
+    # If metrics are disabled, return None so nothing is logged
+    if not CONFIG.get("metrics", {}).get("enabled", False):
+        return None
+
     return {
         "chunking_strategy": chunking_strategy or CONFIG["chunking"]["strategy"],
         "retrieval_strategy": retrieval_strategy or CONFIG["retrieval"]["strategy"],

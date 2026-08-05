@@ -189,14 +189,14 @@ if __name__ == "__main__":
     print("=" * 70)
     exp1_results = []
     r = run_ir_significance(
-        RUN_LOG_DIR / "eval_2026-08-05T15-53-56+00-00_fixed_vector.json",
-        RUN_LOG_DIR / "eval_2026-08-05T16-08-52+00-00_recursive_vector.json",
+        RUN_LOG_DIR / "eval_2026-08-05T19-21-43+00-00_fixed_vector.json",
+        RUN_LOG_DIR / "eval_2026-08-05T18-38-06+00-00_recursive_vector.json",
         label_a="fixed", label_b="recursive",
     )
     exp1_results.extend(r.values())
     r = run_ragas_significance(
-        RUN_LOG_DIR / "eval_2026-08-05T15-53-56+00-00_fixed_vector_ragas.csv",
-        RUN_LOG_DIR / "eval_2026-08-05T16-08-52+00-00_recursive_vector_ragas.csv",
+        RUN_LOG_DIR / "eval_2026-08-05T19-21-43+00-00_fixed_vector_ragas.csv",
+        RUN_LOG_DIR / "eval_2026-08-05T18-38-06+00-00_recursive_vector_ragas.csv",
         label_a="fixed", label_b="recursive",
     )
     exp1_results.extend(r.values())
@@ -209,10 +209,10 @@ if __name__ == "__main__":
         print(f"{res['label']:<45}{res['p_value_approx']:>10.4f}{res['p_holm']:>10.4f}   {sig}")
 
     # --- Experiment 2: UPDATE these 4 paths to the NEW post-merge eval runs ---
-    NEW_VECTOR_JSON = RUN_LOG_DIR / "eval_2026-08-05T16-08-52+00-00_recursive_vector.json"
-    NEW_HYBRID_JSON = RUN_LOG_DIR / "eval_2026-08-05T16-20-37+00-00_recursive_hybrid.json"
-    NEW_VECTOR_RAGAS = RUN_LOG_DIR / "eval_2026-08-05T16-08-52+00-00_recursive_vector_ragas.csv"
-    NEW_HYBRID_RAGAS = RUN_LOG_DIR / "eval_2026-08-05T16-20-37+00-00_recursive_hybrid_ragas.csv"
+    NEW_VECTOR_JSON = RUN_LOG_DIR / "eval_2026-08-05T18-38-06+00-00_recursive_vector.json"
+    NEW_HYBRID_JSON = RUN_LOG_DIR / "eval_2026-08-05T17-56-39+00-00_recursive_hybrid.json"
+    NEW_VECTOR_RAGAS = RUN_LOG_DIR / "eval_2026-08-05T18-38-06+00-00_recursive_vector_ragas.csv"
+    NEW_HYBRID_RAGAS = RUN_LOG_DIR / "eval_2026-08-05T17-56-39+00-00_recursive_hybrid_ragas.csv"
 
     # Two independent analyses, each on its own subgroup -- no merged/overall run.
     # Each subgroup gets its OWN Holm correction: these are treated as two

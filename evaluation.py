@@ -207,6 +207,9 @@ def run_ragas_eval(qa_set, retriever, chain, generation_model, embeddings, tempe
         return ChatGoogleGenerativeAI(model=model_name, vertexai=True, project=project, temperature=temperature,)
     
     dataset=build_ragas_dataset(qa_set, retriever, chain)
+
+    qa_ids=[item["qa_id"] for item in qa_set]
+
     judge_llm = get_judge_llm(generation_model, project="smartstudy-thesis", temperature=temperature,)
     ragas_llm = LangchainLLMWrapper(judge_llm)
     ragas_embeddings = LangchainEmbeddingsWrapper(embeddings)
@@ -215,6 +218,15 @@ def run_ragas_eval(qa_set, retriever, chain, generation_model, embeddings, tempe
 
     result = evaluate(dataset, metrics=metrics, llm=ragas_llm, embeddings=ragas_embeddings)
     result_dataframe=result.to_pandas()
+
+    if len(result_dataframe) != len(qa_ids):
+        raise RuntimeError(
+            f"RAGAS returned {len(result_dataframe)} rows but {len(qa_ids)} questions "
+            "were submitted to evaluate() -- row alignment cannot be safely assumed "
+            "(some items likely failed silently inside ragas). Inspect the run before "
+            "reattaching qa_id; do not use this output for subgroup analysis as-is."
+        )
+    result_dataframe.insert(0, "qa_id", qa_ids)
     return result_dataframe
 
 
@@ -233,6 +245,8 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
 
     from store import(get_embeddings, get_vector_store, get_retriever,)
     from rag_chain import build_chain
+    from metrics import make_metrics_ctx
+
 
     # Step 1: create retriever
     from config import resolve_mongo_cfg
@@ -257,8 +271,17 @@ def run_evaluation(cfg, qa_set, run_ragas=True, match_mode="any"):
         print("[2/3] Running RAGAS evaluation")
         generation_model=cfg["generation"]["model"]
         temperature=cfg["generation"].get("temperature", 0.2)
-
-        chain = build_chain(retriever, generation_model, temperature=temperature)
+        
+        metrics_ctx = make_metrics_ctx(
+            chunking_strategy=cfg["chunking"]["strategy"],
+            retrieval_strategy=cfg["retrieval"]["strategy"],
+            run_id=f"eval_{cfg['chunking']['strategy']}_{cfg['retrieval']['strategy']}",
+        )
+        print(f"[DEBUG] metrics_ctx = {metrics_ctx}")
+        if metrics_ctx is None:
+            print("[WARNING] metrics_ctx is None — no usage metrics will be logged.")
+            
+        chain = build_chain(retriever, generation_model, temperature=temperature,metrics_ctx=metrics_ctx)
 
         ragas_df = run_ragas_eval(qa_set, retriever, chain, generation_model=generation_model, embeddings=embeddings, temperature=temperature)
     else:

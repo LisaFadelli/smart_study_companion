@@ -1104,7 +1104,7 @@ QA_SET=[
         'difficulty': 'hard',
         'notes': 'Section 1.1.3. Traces institutional evolution across the two treaties -- Maastricht created the pillar structure, Amsterdam began dismantling parts of it by shifting areas from intergovernmental to supranational method.'
     },
- 
+
     {
         'qa_id': 'economic_governance_112',
         'question': "What is the key difference between the EU's competence over direct taxation and its competence over indirect taxation?",
@@ -1174,5 +1174,234 @@ QA_SET=[
         ],
         'difficulty': 'medium',
         'notes': 'Sections 3.1.9 and 3.1.11. Both are cohesion-policy instruments but serve different functions -- EGTC is a legal/organisational structure for ongoing cooperation, REACT-EU is a time-bound emergency funding programme.'
+    },
+    {
+        'qa_id': 'economic_governance_113',
+        'question': "What is the difference between the EU's fiscal policy framework and its macroeconomic surveillance framework?",
+        'question_type': 'synthesis',
+        'topic_category': 'economic_governance',
+        'gold_answer': "The EU's fiscal policy framework, centred on the Stability and Growth Pact (as reformed by the 'Six Pack', the Two Pack, and the Treaty on Stability, Coordination and Governance), focuses specifically on preventing unsustainable public finances -- deficit and debt levels. The macroeconomic surveillance framework, built around the macroeconomic imbalance procedure (MIP) set up in 2011, has a broader scope: it is designed to identify and correct macroeconomic imbalances and competitiveness divergences across Member States more generally, not just fiscal ones, since these were identified as a separate driver of the 2008 financial crisis's negative effects.",
+        'gold_sources': [
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 301,
+             'text_span': 'In order to ensure the stability of the Economic and Monetary Union, a robust framework is needed to prevent unsustainable public finances'},
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 307,
+             'text_span': 'In 2011 the EU set up the macroeconomic imbalance procedure (MIP)'}
+        ],
+        'difficulty': 'hard',
+        'notes': 'Sections 2.6.6 and 2.6.7. Both are EU economic-surveillance mechanisms from the same crisis-response period, easily conflated, but one targets fiscal (deficit/debt) discipline, the other broader macroeconomic imbalances/competitiveness.'
+    },
+ 
+    {
+        'qa_id': 'internal_market_116',
+        'question': "What is the difference between the EU's general consumer policy principles and its specific consumer protection measures?",
+        'question_type': 'synthesis',
+        'topic_category': 'internal_market',
+        'gold_answer': "The EU's consumer policy principles establish the general legal framework and objectives -- protecting consumers' health, safety, economic interests, and rights to information -- under Articles 4(2)(f), 12, 114 and 169 TFEU. Consumer protection measures are the concrete legislative instruments that implement these principles in practice, such as the General Product Safety System (Directive 2001/95/EC) and specific rules covering products including medicines, genetically modified organisms, tobacco, cosmetics, toys and explosives.",
+        'gold_sources': [
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 80,
+             'text_span': 'Effective consumer protection policy ensures that the single market can function properly and efficiently'},
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 86,
+             'text_span': 'European measures for consumer protection are intended to protect the health, safety, and economic and legal interests of European consumers'}
+        ],
+        'difficulty': 'medium',
+        'notes': 'Sections 2.2.1 and 2.2.2. General principles/legal framework vs. specific implementing measures/directives -- tests whether retrieval distinguishes the two adjacent, similarly-named sections.'
+    },
+ 
+    {
+        'qa_id': 'internal_market_117',
+        'question': "How does the EU's innovation policy differ from its research framework programmes, such as Horizon Europe?",
+        'question_type': 'synthesis',
+        'topic_category': 'internal_market',
+        'gold_answer': 'Innovation policy is the broader interface between research and technological development policy and industrial policy, aiming to create a framework conducive to bringing ideas to market and improving EU competitiveness -- its legal basis is Article 173 TFEU. The research framework programmes, such as Horizon Europe, are the main funding instrument of research and technological development (RTD) policy specifically: multiannual programmes, adopted under the ordinary legislative procedure, that define concrete objectives, priorities and the financial support package for research and innovation projects.',
+        'gold_sources': [
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 198,
+             'text_span': 'Innovation policy is the interface between research and technological development policy and industrial policy'},
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 193,
+             'text_span': 'The first framework programme (FP) was established in 1983, for a four-year period'}
+        ],
+        'difficulty': 'medium',
+        'notes': 'Sections 2.4.5 and 2.4.6. Complements internal_market_107/108 (which test facts about framework-programme/Horizon Europe funding) by supplying the broader innovation-policy-vs-funding-instrument distinction.'
+    },
+ 
+    {
+        'qa_id': 'sectoral_policy_113',
+        'question': "What is the difference in regulatory focus between the EU's aviation safety policy and its maritime transport 'strategic approach' policy?",
+        'question_type': 'synthesis',
+        'topic_category': 'sectoral_policy',
+        'gold_answer': "EU aviation safety policy is centred specifically on establishing common rules to guarantee a uniform, high level of safety throughout the internal aviation market, complementing the non-binding international standards set by the International Civil Aviation Organization (ICAO). The EU's maritime transport strategic approach, by contrast, focuses primarily on applying the principle of free movement of services and competition rules to the maritime sector; the EU's maritime safety policy specifically is addressed in a separate, dedicated fact sheet rather than being the focus of the strategic approach itself.",
+        'gold_sources': [
+            {'source': 'Cohesion_growth_jobs_2023.pdf',
+             'page': 187,
+             'text_span': 'Common rules, which have gradually been extended to cover the entire aviation sector, guarantee a uniform, high level of safety'},
+            {'source': 'Cohesion_growth_jobs_2023.pdf',
+             'page': 193,
+             'text_span': 'EU regulations on maritime transport focus on the application of the principle of free movement of services and the correct application of competition rules'}
+        ],
+        'difficulty': 'medium',
+        'notes': "Sections 3.4.9 and 3.4.10. Both could be assumed to be about safety, but aviation's dedicated section IS about safety, while maritime's 'strategic approach' section is explicitly about market/competition rules -- maritime safety is handled in a separate fact sheet (3.4.11)."
+    },
+    {
+        'qa_id': 'institutions_118',
+        'question': 'What is the difference between the role of the European Ombudsman and the role of the European Court of Auditors?',
+        'question_type': 'synthesis',
+        'topic_category': 'institutions',
+        'gold_answer': "The European Ombudsman investigates cases of maladministration by EU institutions, bodies, offices and agencies, acting either on their own initiative or on complaints from citizens or residents of the EU -- essentially an administrative-conduct watchdog, elected by the European Parliament. The European Court of Auditors, by contrast, is the EU's external financial auditor, checking that EU finances have been properly implemented and managed, rather than investigating individual citizens' complaints about how they were treated by an EU institution.",
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 142,
+             'text_span': 'The European Ombudsman conducts inquiries into cases of maladministration by European Union institutions, bodies, offices and agencies'},
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 122,
+             'text_span': 'The European Court of Auditors (ECA) is in charge of the audit of EU finances'}
+        ],
+        'difficulty': 'medium',
+        'notes': "Sections 1.3.12 and 1.3.16. A third 'oversight body' distinction (alongside institutions_115's CJEU/ECA pair) -- Ombudsman is citizen-complaint-driven administrative oversight, ECA is financial auditing; both easily lumped together as generic 'EU watchdogs'."
+    },
+ 
+    {
+        'qa_id': 'legislative_procedure_113',
+        'question': "How does the Conciliation Committee used in the ordinary legislative procedure differ from the Conciliation Committee used in the EU's annual budget procedure?",
+        'question_type': 'synthesis',
+        'topic_category': 'legislative_procedure',
+        'gold_answer': "Both are called the 'Conciliation Committee' and both consist of an equal number of Council and Parliament representatives, assisted by the Commission, but they operate in different procedures with different deadlines. Under the ordinary legislative procedure, the Conciliation Committee is convened after a failed second reading and has six weeks to agree on a joint legislative text. Under the annual budget procedure, a separately-convened Conciliation Committee is given only 21 days to agree on a joint budget text after Parliament's amendments and the Council's position could not be reconciled.",
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 42,
+             'text_span': 'The Conciliation Committee consists of an equal number of Council and Parliament representatives, assisted by the Commission. It considers the positions of Parliament and the Council and has six weeks to agree on a joint text'},
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 54,
+             'text_span': 'the Conciliation Committee (composed of equal numbers of representatives of the Council and of Parliament) has 21 days to agree on a joint text'}
+        ],
+        'difficulty': 'hard',
+        'notes': 'Sections 1.2.3 (ordinary legislative procedure) and 1.2.5 (budget procedure). Genuinely the same institutional name used for two functionally distinct bodies/procedures with different deadlines (6 weeks vs. 21 days) -- a strong, real near-identical-concept EPSO distractor, not a constructed one.'
+    },
+    {
+        'qa_id': 'sectoral_policy_114',
+        'question': "What is the difference between the EU's fisheries structural assistance and the Common Market Organisation (CMO) in fishery and aquaculture products?",
+        'question_type': 'synthesis',
+        'topic_category': 'sectoral_policy',
+        'gold_answer': "Fisheries structural assistance is the financial support mechanism for the Common Fisheries Policy, currently provided through the European Maritime and Fisheries Fund (EMFF), which funds fishermen's transition to sustainable fishing and supports coastal community diversification. The Common Market Organisation (CMO), by contrast, is not a funding instrument but the Union's policy for managing the market in fishery and aquaculture products -- covering common market standards, consumer information, and producer organisations -- and was the first component of the Common Fisheries Policy, originally implemented in 1970 under the legal framework for the Common Agricultural Policy.",
+        'gold_sources': [
+            {'source': 'Cohesion_growth_jobs_2023.pdf',
+             'page': 104,
+             'text_span': 'the European fisheries policy was funded by the European Fisheries Fund (EFF) for 2007-2013, and is presently funded by the new European Maritime and Fisheries Fund (EMFF)'},
+            {'source': 'Cohesion_growth_jobs_2023.pdf',
+             'page': 110,
+             'text_span': 'The Common Market Organisation (CMO) in fishery and aquaculture products was the first component of the Common Fisheries Policy (CFP)'}
+        ],
+        'difficulty': 'medium',
+        'notes': "Sections 3.3.4 and 3.3.5. Funding instrument (EMFF) vs market-regulation policy (CMO) -- both fisheries-policy components, easily conflated as 'the fisheries fund', but only one is actually a fund."
+    },
+ 
+    {
+        'qa_id': 'economic_governance_114',
+        'question': 'How does the European System of Financial Supervision (ESFS) differ in scope from the Banking Union?',
+        'question_type': 'synthesis',
+        'topic_category': 'economic_governance',
+        'gold_answer': 'The ESFS is a broader, EU-wide multi-layered supervisory system covering all Member States, comprising the European Systemic Risk Board, three European supervisory authorities (for banking, securities/markets, and insurance/pensions), and national supervisors -- it applies across the whole financial sector and to euro and non-euro Member States alike. The Banking Union, by contrast, is a narrower mechanism specifically for banking supervision and resolution in the euro area (with non-euro states able to opt in), consisting of the Single Supervisory Mechanism and the Single Resolution Mechanism, created specifically in response to the financial crisis.',
+        'gold_sources': [
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 343,
+             'text_span': 'The European System of Financial Supervision (ESFS) is a multi-layered system of micro- and macro-prudential authorities that aims to ensure consistent and coherent financial supervision in the EU'},
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 297,
+             'text_span': 'The Banking Union was created as a response to the financial crisis and currently has two elements, the Single Supervisory Mechanism (SSM) and the Single Resolution Mechanism (SRM)'}
+        ],
+        'difficulty': 'hard',
+        'notes': 'Sections 2.6.5 and 2.6.14. Complements economic_governance_111 (economic governance vs Banking Union) with a third related concept -- ESFS is the EU-wide umbrella supervisory architecture, Banking Union is the euro-area-specific banking subset within it.'
+    },
+    {
+        'qa_id': 'budget_117',
+        'question': 'What is the difference between what the European Social Fund Plus (ESF+) invests in and what the European Regional Development Fund (ERDF) invests in?',
+        'question_type': 'synthesis',
+        'topic_category': 'budget',
+        'gold_answer': "The ESF+ is the EU's main instrument dedicated to investing in people -- supporting employment, skills development, and social protection. The ERDF, by contrast, invests in regions -- its purpose is to reduce disparities between the levels of development of European regions and improve living standards in the least-favoured regions.",
+        'gold_sources': [
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 124,
+             'text_span': "The ESF+ is the EU's main instrument dedicated to investing in people"},
+            {'source': 'Cohesion_growth_jobs_2023.pdf',
+             'page': 7,
+             'text_span': 'Its purpose is to contribute to reducing disparities between the levels of development of European regions'}
+        ],
+        'difficulty': 'easy',
+        'notes': "Sections 2.3.2 and 3.1.2. Simple, clean distinction: ESF+ = people-focused fund, ERDF = region-focused fund -- both major EU structural funds, easily confused as 'the same cohesion money'."
+    },
+ 
+    {
+        'qa_id': 'budget_118',
+        'question': 'How does NextGenerationEU (NGEU) differ from the normal Multiannual Financial Framework (MFF)?',
+        'question_type': 'synthesis',
+        'topic_category': 'budget',
+        'gold_answer': "The Multiannual Financial Framework (MFF) is the EU's normal budget-planning framework, established for a period of at least five years (there have been six MFFs to date, including 2021-2027), setting expenditure ceilings for broad categories of EU spending. NextGenerationEU (NGEU), by contrast, is not itself an MFF: it is an additional, exceptional recovery instrument worth EUR 750 billion, proposed by the Commission on 27 May 2020 in response to the COVID-19 crisis, whose main component (the Recovery and Resilience Facility) makes EUR 672.5 billion in loans and grants available to Member States via their national recovery plans.",
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 158,
+             'text_span': "Established for a period of at least five years, an MFF is there to ensure that the EU's expenditure develops in an orderly manner and within the limits of its own resources"},
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 156,
+             'text_span': 'The facility will make EUR 672.5 billion (in 2018 prices) in loans and grants available to the Member States to be implemented through the national recovery and resilience plans (NRRPs)'}
+        ],
+        'difficulty': 'easy',
+        'notes': 'Sections 1.4.3. Simple whole-vs-part / normal-vs-exceptional distinction: the MFF is the standard multi-year budget framework, NGEU/RRF is a one-off recovery instrument layered on top of it, not itself an MFF.'
+    },
+    {
+        'qa_id': 'institutions_119',
+        'question': 'How does the composition of the Court of Justice differ from the composition of the General Court?',
+        'question_type': 'synthesis',
+        'topic_category': 'institutions',
+        'gold_answer': 'The Court of Justice consists of 27 judges, one per Member State, plus 11 advocates-general. The General Court, by contrast, consists of two judges per Member State (currently 54 judges), and does not have permanent advocates-general -- its own judges can be called upon to perform that role instead when needed.',
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 105,
+             'text_span': 'The Court may sit as a full Court with 27 judges, in a'},
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 108,
+             'text_span': 'the General Court is to consist of two judges per Member State from 1 September 2019 (currently 54)'}
+        ],
+        'difficulty': 'easy',
+        'notes': "Section 1.3.9 (both subsections). Very simple, clean numeric distinction: CJEU=27 judges+11 AGs, General Court=54 judges+no permanent AGs -- both part of the same overall 'Court of Justice of the European Union' institution, easily conflated."
+    },
+ 
+    {
+        'qa_id': 'institutions_120',
+        'question': "How does the European Council's decision-making differ from that of the Council of the European Union?",
+        'question_type': 'synthesis',
+        'topic_category': 'institutions',
+        'gold_answer': 'The European Council usually decides on issues by consensus -- an informal, political agreement among the heads of state or government -- although a number of important appointments (such as its own president or the candidate for Commission President) are made by qualified majority. The Council of the European Union, by contrast, formally adopts EU legislation and decisions by simple majority, qualified majority, or unanimity, depending on the legal basis of the act in question -- a formal voting process rather than consensus-seeking.',
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 88,
+             'text_span': 'The European Council usually decides on issues by consensus, but a number of important appointments are made by qualified majority'},
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 94,
+             'text_span': 'it takes its decisions by a simple majority, a qualified majority or unanimously, according to the legal basis of the act requiring its approval'}
+        ],
+        'difficulty': 'easy',
+        'notes': "Sections 1.3.6 and 1.3.7. A third angle on the European Council/Council pair (alongside institutions_103's institutional-role framing) -- this one is specifically about HOW each body decides (consensus vs formal vote), simpler and more clear-cut than the institutional-role comparison."
+    },
+ 
+    {
+        'qa_id': 'institutions_121',
+        'question': "Where is the European Parliament's seat located, and how does this differ from where the European Central Bank is based?",
+        'question_type': 'synthesis',
+        'topic_category': 'institutions',
+        'gold_answer': "The European Parliament's formal seat is in Strasbourg, where its 12 monthly plenary part-sessions (including the session adopting the annual EU budget) are held, while additional part-sessions and committee meetings take place in Brussels, and its secretariat remains in Luxembourg -- a three-city arrangement agreed at the 1992 Edinburgh European Council. The European Central Bank, by contrast, has a single seat: it has been based in Frankfurt am Main since its establishment on 1 June 1998.",
+        'gold_sources': [
+            {'source': 'How_the_European_Union_works_2023.pdf',
+             'page': 72,
+             'text_span': 'Parliament should have its seat in Strasbourg, where the 12 monthly part-sessions, including the session at which the decision on the annual EU budget is taken, should be held'},
+            {'source': 'Economy_science_Quality_of_life_2023.pdf',
+             'page': 282,
+             'text_span': 'Established on 1 June 1998, the ECB is based in Frankfurt am Main'}
+        ],
+        'difficulty': 'easy',
+        'notes': "Section 1.3.1 (Parliament's seat) and ECB organisation. Very simple, classic EPSO fact: Parliament is split across three cities by treaty arrangement, while most other EU institutions have a single seat -- a clean, well-known contrast."
     }
 ]
